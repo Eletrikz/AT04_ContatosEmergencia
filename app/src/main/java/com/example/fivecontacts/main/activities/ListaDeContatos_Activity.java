@@ -63,6 +63,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         bnv.setSelectedItemId(R.id.anvLigar);
 
         lv = findViewById(R.id.listView1);
+        view = this.getWindow().getDecorView();
 
         //Dados da Intent Anterior
         Intent quemChamou = this.getIntent();
@@ -72,14 +73,11 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
                 if (user != null) {
-                    setTitle("Contatos de Emergência de "+user.getNome());
+                    setTitle("Contatos de Emergência de " + user.getNome());
                     preencherListView(user); //Montagem do ListView
                     preencherListViewImagens(user);
-                    view = this.getWindow().getDecorView();
                     if (user.isTema_escuro()){
                         view.setBackgroundColor(Color.BLACK);
-                    } else {
-                        view.setBackgroundColor(Color.WHITE);
                     }
                 }
             }
@@ -94,7 +92,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         ArrayList<Contato> contatos = new ArrayList<Contato>();
 
         Contato contato;
-
 
         for (int i = 1; i <= num; i++) {
             String objSel = recuperarContatos.getString("contato" + i, "");
@@ -115,11 +112,10 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
             }
 
-
         }
         user.setContatos(contatos);
     }
-    protected  void preencherListViewImagens(User user){
+    protected void preencherListViewImagens(User user){
 
         final ArrayList<Contato> contatos = user.getContatos();
         Collections.sort(contatos);
@@ -150,7 +146,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
 
                     if (checarPermissaoPhone_SMD(contatos.get(i).getNumero())) {
 
@@ -315,8 +310,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         boolean manterLogado = temUser.getBoolean("manterLogado",false);
         boolean temaEscuro = temUser.getBoolean("tema", false);
 
-        user = new User(nomeSalvo,loginSalvo,senhaSalva,emailSalvo,manterLogado);
-        user.setTema_escuro(temaEscuro);
+        user = new User(nomeSalvo, loginSalvo, senhaSalva, emailSalvo, manterLogado, temaEscuro);
         return user;
     }
 

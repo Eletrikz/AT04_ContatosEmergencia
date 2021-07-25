@@ -13,12 +13,13 @@ public class User implements Serializable {
     boolean tema_escuro=false;
     ArrayList<Contato> contatos;
 
-    public User(String nome, String login, String password, String email, boolean manterLogado) {
+    public User(String nome, String login, String password, String email, boolean manterLogado, boolean temaEscuro) {
         this.nome = nome;
         this.login = login;
         this.senha = password;
         this.email = email;
         this.manterLogado = manterLogado;
+        this.tema_escuro = temaEscuro;
         this.contatos = new ArrayList<Contato>();
     }
 

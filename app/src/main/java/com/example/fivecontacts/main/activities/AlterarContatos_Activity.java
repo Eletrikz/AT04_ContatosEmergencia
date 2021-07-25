@@ -51,6 +51,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         bnv.setOnNavigationItemSelectedListener(this);
         bnv.setSelectedItemId(R.id.anvMudar);
         lv = findViewById(R.id.listContatosDoCell);
+        view = this.getWindow().getDecorView();
 
         //Dados da Intent Anterior
         Intent quemChamou=this.getIntent();
@@ -60,15 +61,11 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
                 setTitle("Alterar Contatos de Emergência");
-                view = this.getWindow().getDecorView();
                 if (user.isTema_escuro()){
                     view.setBackgroundColor(Color.BLACK);
-                } else {
-                    view.setBackgroundColor(Color.WHITE);
                 }
             }
         }
-
     }
 
     public void salvarContato (Contato w){

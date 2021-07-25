@@ -70,7 +70,7 @@ public class NovoUsuario_Activity extends AppCompatActivity {
 
                 //Salvando o user
 
-                User user = new User(nome,login,senha,email,manterLogado);
+                User user = new User(nome, login, senha, email, manterLogado, temaEscuro);
 
                 Intent intent=new Intent(NovoUsuario_Activity.this, AlterarContatos_Activity.class);
                 intent.putExtra("usuario",user);

@@ -52,6 +52,7 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
         edEmail = findViewById(R.id.edEmail);
         swLogado = findViewById(R.id.swLogado);
         swTema2 = findViewById(R.id.swTema2);
+        view = this.getWindow().getDecorView();
 
         Intent quemChamou = this.getIntent();
         if (quemChamou != null) {
@@ -60,23 +61,19 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
                 setTitle("Alterar dados de "+user.getNome());
-                view = this.getWindow().getDecorView();
                 if (user.isTema_escuro()){
                     view.setBackgroundColor(Color.BLACK);
-                } else {
-                    view.setBackgroundColor(Color.WHITE);
                 }
             }
         }
+
         if (user != null) {
             edUser.setText(user.getLogin());
             edPass.setText(user.getSenha());
             edNome.setText(user.getNome());
             edEmail.setText(user.getEmail());
             swLogado.setChecked(user.isManterLogado());
-            Log.v("pdm", user.isTema_escuro()+"");
             swTema2.setChecked(user.isTema_escuro());
-            Log.v("pdm", user.isTema_escuro()+"");
         }
 
         btModificar.setOnClickListener(new View.OnClickListener() {
@@ -87,9 +84,7 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
                 user.setSenha(edPass.getText().toString());
                 user.setEmail(edEmail.getText().toString());
                 user.setManterLogado(swLogado.isChecked());
-                Log.v("pdm", user.isTema_escuro()+"");
                 user.setTema_escuro(swTema2.isChecked());
-                Log.v("pdm", user.isTema_escuro()+"");
                 salvarModificacoes(user);
             }
         });
@@ -127,7 +122,6 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
         escritor.putBoolean("manterLogado", user.isManterLogado());
         escritor.putBoolean("tema", user.isTema_escuro());
 
-        Log.v("pdm", user.getNome() + user.getSenha() + user.getLogin() + user.getEmail() + user.isManterLogado() + user.isTema_escuro());
         escritor.commit(); //Salva em Disco
 
         Toast.makeText(PerfilUsuario_Activity.this,"Modificações Salvas",Toast.LENGTH_LONG).show() ;
