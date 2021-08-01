@@ -2,6 +2,7 @@ package com.example.fivecontacts.main.activities;
 
 import androidx.annotation.NonNull;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -18,6 +19,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,15 +47,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ListaDeContatos_Activity extends AppCompatActivity implements UIEducacionalPermissao.NoticeDialogListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
     ListView lv;
     BottomNavigationView bnv;
     User user;
-    View view;
-
     String numeroCall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +66,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         bnv.setSelectedItemId(R.id.anvLigar);
 
         lv = findViewById(R.id.listView1);
-        view = this.getWindow().getDecorView();
 
         //Dados da Intent Anterior
         Intent quemChamou = this.getIntent();
@@ -77,7 +79,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                     preencherListView(user); //Montagem do ListView
                     preencherListViewImagens(user);
                     if (user.isTema_escuro()){
-                        view.setBackgroundColor(Color.BLACK);
+                        ((ConstraintLayout) (lv.getParent())).setBackgroundColor(Color.BLACK);
                     }
                 }
             }
@@ -115,6 +117,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         }
         user.setContatos(contatos);
     }
+
     protected void preencherListViewImagens(User user){
 
         final ArrayList<Contato> contatos = user.getContatos();
@@ -161,6 +164,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         }
 
     }
+
     protected void preencherListView(User user) {
 
         final ArrayList<Contato> contatos = user.getContatos();
@@ -191,7 +195,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                         Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
                         startActivity(itLigar);
                     }
-
 
                 }
             });

@@ -40,7 +40,6 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
     ListView lv;
     BottomNavigationView bnv;
     User user;
-    View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,6 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         bnv.setOnNavigationItemSelectedListener(this);
         bnv.setSelectedItemId(R.id.anvMudar);
         lv = findViewById(R.id.listContatosDoCell);
-        view = this.getWindow().getDecorView();
 
         //Dados da Intent Anterior
         Intent quemChamou=this.getIntent();
@@ -62,7 +60,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                 user = (User) params.getSerializable("usuario");
                 setTitle("Alterar Contatos de Emergência");
                 if (user.isTema_escuro()){
-                    view.setBackgroundColor(Color.BLACK);
+                    ((ConstraintLayout) (lv.getParent())).setBackgroundColor(Color.BLACK);
                 }
             }
         }
