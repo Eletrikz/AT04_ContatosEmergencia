@@ -88,6 +88,18 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         user.getContatos().add(w);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v("PDM","Matando a Activity Lista de Contatos");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.v("PDM","Matei a Activity Lista de Contatos");
+    }
+
     public void onClickBuscar(View v){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
             Log.v("PDM", "Pedir permissão");
@@ -101,6 +113,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         String [] argumentosConsulta= {"%"+edtNome.getText()+"%"};
         Cursor cursor= cr.query(ContactsContract.Contacts.CONTENT_URI, null,
                 consulta,argumentosConsulta, null);
+
         final String[] nomesContatos = new String[cursor.getCount()];
         final String[] telefonesContatos = new String[cursor.getCount()];
         Log.v("PDM","Tamanho do cursor:"+cursor.getCount());

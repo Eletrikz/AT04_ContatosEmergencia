@@ -6,16 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".main.activities.AlterarContatos_Activity">
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:paddingLeft="50px"
+        android:paddingRight="50px"
+        android:text="Digite o contato que quer adicionar no campo de busca abaixo."
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:id="@+id/layoutH"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:background="@color/colorBackground"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
 
         <ImageView
             android:id="@+id/buscarImg"
@@ -28,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Seus contatos?"
+            android:hint="Digite o contato"
             android:inputType="textPersonName"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHint="@color/colorPrimary"
@@ -72,7 +87,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:background="#88FEE9E3"
-        android:divider="#FF5722"
+        android:divider="@color/colorPrimary"
         android:dividerHeight="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

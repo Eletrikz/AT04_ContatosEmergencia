@@ -10,7 +10,9 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -55,6 +57,9 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
     BottomNavigationView bnv;
     User user;
     String numeroCall;
+    Uri uriAtual;
+
+    boolean segurando = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,10 +128,16 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         final ArrayList<Contato> contatos = user.getContatos();
         Collections.sort(contatos);
         if (contatos != null) {
+
+            if (contatos.isEmpty()) {
+                setTitle("Não possui contatos salvos");
+            }
+
             String[] contatosNomes, contatosAbrevs;
             contatosNomes = new String[contatos.size()];
             contatosAbrevs= new String[contatos.size()];
             Contato c;
+
             for (int j = 0; j < contatos.size(); j++) {
                 contatosAbrevs[j] =contatos.get(j).getNome().substring(0, 1);
                 contatosNomes[j] =contatos.get(j).getNome();
@@ -140,6 +151,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 listItemMap.put("abrevs",contatosAbrevs[i]);
                 itemDataList.add(listItemMap);
             }
+
             SimpleAdapter simpleAdapter = new SimpleAdapter(this,itemDataList,R.layout.list_view_layout_imagem,
                     new String[]{"imageId","contato","abrevs"},new int[]{R.id.userImage, R.id.userTitle,R.id.userAbrev});
 
@@ -149,15 +161,23 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                    if (checarPermissaoPhone_SMD(contatos.get(i).getNumero())) {
-
+                    if (checarPermissaoPhone_SMD(contatos.get(i).getNumero()) && !segurando) {
                         Uri uri = Uri.parse(contatos.get(i).getNumero());
-                         //  Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
-                            Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
+                        uriAtual = uri;
+                        Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
                         startActivity(itLigar);
                     }
+                }
+            });
 
+            lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    segurando = true;
+                    Contato c = contatos.get(position);
+                    caixaDialogoRemover(c);
+
+                    return false;
                 }
             });
 
@@ -184,21 +204,88 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             lv.setAdapter(adaptador);
 
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
                     if (checarPermissaoPhone_SMD(contatos.get(i).getNumero())) {
-
                         Uri uri = Uri.parse(contatos.get(i).getNumero());
-                      //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
                         Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
                         startActivity(itLigar);
+                    } else {
+                        Uri uri = Uri.parse(contatos.get(i).getNumero());
+                        Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
+                        startActivity(itLigar);
                     }
-
                 }
             });
+
+
         }//fim do IF do tamanho de contatos
+    }
+
+    protected void caixaDialogoRemover (Contato c) {
+        DialogInterface.OnClickListener dialog = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        removerContato(c);
+                        segurando = false;
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        segurando = false;
+                        break;
+                    default:
+                        segurando = false;
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder adb = new AlertDialog.Builder(ListaDeContatos_Activity.this);
+        adb.setTitle("Remover contato");
+        adb.setMessage("Tem certeza que quer remover esse contato?");
+        adb.setNegativeButton("Cancelar", dialog);
+        adb.setPositiveButton("Ok", dialog);
+        adb.show();
+    }
+
+    protected void removerContato (Contato c) {
+        SharedPreferences resgatarContatosAtuais = getSharedPreferences("contatos", Activity.MODE_PRIVATE);
+
+        int numero = resgatarContatosAtuais.getInt("numContatos", 0);
+
+        Contato contato;
+        int contatoSeraRemovido = 0;
+
+        for (int i = 1; i <= numero; i++) {
+            String objSel = resgatarContatosAtuais.getString("contato" + i, "");
+            if (objSel.compareTo("") != 0) {
+                try {
+                    ByteArrayInputStream bis = new ByteArrayInputStream(objSel.getBytes(StandardCharsets.ISO_8859_1.name()));
+                    ObjectInputStream oos = new ObjectInputStream(bis);
+                    contato = (Contato) oos.readObject();
+
+                    // Checando se o contato deserializado recebido não é nulo E tem o número igual ao enviado
+                    if (contato != null && c.getNumero().equals(contato.getNumero())) {
+                        contatoSeraRemovido = i;
+                        break;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        SharedPreferences.Editor editor = resgatarContatosAtuais.edit();
+        editor.remove("contato" + contatoSeraRemovido);
+        editor.commit();
+
+        Toast.makeText(this, "Contato deletado com sucesso!", Toast.LENGTH_LONG).show();
+
+        user = atualizarUser();
+        atualizarListaDeContatos(user);
+        preencherListViewImagens(user);
     }
 
     protected boolean checarPermissaoPhone_SMD(String numero){
@@ -224,7 +311,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             } else {
                 String mensagem = "Nossa aplicação precisa acessar o telefone para discagem automática. Uma janela de permissão será solicitada";
                 String titulo = "Permissão de acesso a chamadas II";
-                int codigo =1;
+                int codigo = 1;
 
                 UIEducacionalPermissao mensagemPermissao = new UIEducacionalPermissao(mensagem,titulo, codigo);
                 mensagemPermissao.onAttach ((Context)this);
@@ -243,15 +330,16 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             case 2222:
                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                    Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
+                   /*
                    Uri uri = Uri.parse(numeroCall);
-                   //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
+                   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
                    Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
-                   startActivity(itLigar);
+                   startActivity(itLigar);*/
 
-               }else{
+               } else {
                    Toast.makeText(this, "SEU FELA!", Toast.LENGTH_LONG).show();
 
-                   String mensagem= "Seu aplicativo pode ligar diretamente, mas sem permissão não funciona. Se você marcou não perguntar mais, você deve ir na tela de configurações para mudar a instalação ou reinstalar o aplicativo.";
+                   String mensagem= "O aplicativo pode realizar a ligação diretamente, mas sem permissão não funciona. Se você negou, deve ir na tela de configurações para mudar a permissão ou reinstalar o aplicativo.";
                    String titulo= "Porque precisamos telefonar?";
                    UIEducacionalPermissao mensagemPermisso = new UIEducacionalPermissao(mensagem,titulo,2);
                    mensagemPermisso.onAttach((Context)this);
@@ -290,15 +378,15 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             user=atualizarUser();
             setTitle("Contatos de Emergência de "+user.getNome());
             atualizarListaDeContatos(user);
-           // preencherListViewImagens(user);
-            preencherListView(user); //Montagem do ListView
+            preencherListViewImagens(user);
+            //preencherListView(user); //Montagem do ListView
         }
 
         if (requestCode == 1112) {//Retorno de Mudar Contatos
             bnv.setSelectedItemId(R.id.anvLigar);
             atualizarListaDeContatos(user);
-            //preencherListViewImagens(user);
-            preencherListView(user); //Montagem do ListView
+            preencherListViewImagens(user);
+            //preencherListView(user); //Montagem do ListView
         }
 
     }
@@ -323,7 +411,9 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         if (codigo==1){
           String[] permissions ={Manifest.permission.CALL_PHONE};
           requestPermissions(permissions, 2222);
-
+        } else if (codigo == 2) {
+            Intent itLigar = new Intent(Intent.ACTION_DIAL, uriAtual);
+            startActivity(itLigar);
         }
 
     }
