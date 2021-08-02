@@ -81,7 +81,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 user = (User) params.getSerializable("usuario");
                 if (user != null) {
                     setTitle("Contatos de Emergência de " + user.getNome());
-                    preencherListView(user); //Montagem do ListView
                     preencherListViewImagens(user);
                     if (user.isTema_escuro()){
                         ((ConstraintLayout) (lv.getParent())).setBackgroundColor(Color.BLACK);
@@ -185,43 +184,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
     }
 
-    protected void preencherListView(User user) {
-
-        final ArrayList<Contato> contatos = user.getContatos();
-
-        if (contatos != null) {
-            final String[] nomesSP;
-            nomesSP = new String[contatos.size()];
-            Contato c;
-            for (int j = 0; j < contatos.size(); j++) {
-                nomesSP[j] = contatos.get(j).getNome();
-            }
-
-            ArrayAdapter<String> adaptador;
-
-            adaptador = new ArrayAdapter<String>(this, R.layout.list_view_layout, nomesSP);
-
-            lv.setAdapter(adaptador);
-
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    if (checarPermissaoPhone_SMD(contatos.get(i).getNumero())) {
-                        Uri uri = Uri.parse(contatos.get(i).getNumero());
-                        Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
-                        startActivity(itLigar);
-                    } else {
-                        Uri uri = Uri.parse(contatos.get(i).getNumero());
-                        Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
-                        startActivity(itLigar);
-                    }
-                }
-            });
-
-
-        }//fim do IF do tamanho de contatos
-    }
-
     protected void caixaDialogoRemover (Contato c) {
         DialogInterface.OnClickListener dialog = new DialogInterface.OnClickListener() {
             @Override
@@ -265,12 +227,11 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                     ObjectInputStream oos = new ObjectInputStream(bis);
                     contato = (Contato) oos.readObject();
 
-                    // Checando se o contato deserializado recebido não é nulo E tem o número igual ao enviado
+                    // Checando se o contato deserializado recebido não é nulo e é igual ao num recebido
                     if (contato != null && c.getNumero().equals(contato.getNumero())) {
                         contatoSeraRemovido = i;
                         break;
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -330,12 +291,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             case 2222:
                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                    Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
-                   /*
-                   Uri uri = Uri.parse(numeroCall);
-                   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
-                   Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
-                   startActivity(itLigar);*/
-
                } else {
                    Toast.makeText(this, "SEU FELA!", Toast.LENGTH_LONG).show();
 
@@ -379,14 +334,12 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             setTitle("Contatos de Emergência de "+user.getNome());
             atualizarListaDeContatos(user);
             preencherListViewImagens(user);
-            //preencherListView(user); //Montagem do ListView
         }
 
         if (requestCode == 1112) {//Retorno de Mudar Contatos
             bnv.setSelectedItemId(R.id.anvLigar);
             atualizarListaDeContatos(user);
             preencherListViewImagens(user);
-            //preencherListView(user); //Montagem do ListView
         }
 
     }

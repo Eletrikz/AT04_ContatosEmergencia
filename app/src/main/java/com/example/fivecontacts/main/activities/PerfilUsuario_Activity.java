@@ -124,8 +124,24 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
 
         escritor.commit(); //Salva em Disco
 
-        Toast.makeText(PerfilUsuario_Activity.this,"Modificações Salvas",Toast.LENGTH_LONG).show() ;
+        this.user = atualizarUser();
+
+        Toast.makeText(PerfilUsuario_Activity.this,"Modificações Salvas",Toast.LENGTH_LONG).show();
 
         finish();
+    }
+
+    private User atualizarUser() {
+        User user = null;
+        SharedPreferences temUser= getSharedPreferences("usuarioPadrao", Activity.MODE_PRIVATE);
+        String loginSalvo = temUser.getString("login","");
+        String senhaSalva = temUser.getString("senha","");
+        String nomeSalvo = temUser.getString("nome","");
+        String emailSalvo = temUser.getString("email","");
+        boolean manterLogado = temUser.getBoolean("manterLogado",false);
+        boolean temaEscuro = temUser.getBoolean("tema", false);
+
+        user = new User(nomeSalvo, loginSalvo, senhaSalva, emailSalvo, manterLogado, temaEscuro);
+        return user;
     }
 }

@@ -69,16 +69,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/activity_main_bottom_actions" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutH"
-        app:srcCompat="@drawable/ic_action_mudarv2" />
-
     <ListView
         android:id="@+id/listContatosDoCell"
         android:layout_width="match_parent"
@@ -91,6 +81,6 @@
         android:dividerHeight="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView2" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutH" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
