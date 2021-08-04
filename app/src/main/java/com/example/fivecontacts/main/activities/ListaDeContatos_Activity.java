@@ -57,8 +57,11 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
     BottomNavigationView bnv;
     User user;
     String numeroCall;
+
+    // Declaração global para uma maior facilidade na permissão das chamadas e DIAL
     Uri uriAtual;
 
+    // Variável para impedir que a função da ligação seja realizada, junto com a de remoção
     boolean segurando = false;
 
     @Override
@@ -128,6 +131,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         Collections.sort(contatos);
         if (contatos != null) {
 
+            // Checa se tem contato salvo e muda o título
             if (contatos.isEmpty()) {
                 setTitle("Não possui contatos salvos");
             }
@@ -169,6 +173,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 }
             });
 
+            // Segura para remover um contato
             lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -184,7 +189,9 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
     }
 
+    // Função para criar a caixa de diálogo
     protected void caixaDialogoRemover (Contato c) {
+        // A escolha do DialogInterface foi pela flexibilidade de usar o switch
         DialogInterface.OnClickListener dialog = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -211,6 +218,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         adb.show();
     }
 
+    // Função para remover o contato
     protected void removerContato (Contato c) {
         SharedPreferences resgatarContatosAtuais = getSharedPreferences("contatos", Activity.MODE_PRIVATE);
 
@@ -219,6 +227,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         Contato contato;
         int contatoSeraRemovido = 0;
 
+        // Deserializa o contato
         for (int i = 1; i <= numero; i++) {
             String objSel = resgatarContatosAtuais.getString("contato" + i, "");
             if (objSel.compareTo("") != 0) {
@@ -227,7 +236,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                     ObjectInputStream oos = new ObjectInputStream(bis);
                     contato = (Contato) oos.readObject();
 
-                    // Checando se o contato deserializado recebido não é nulo e é igual ao num recebido
+                    // Checa se o contato recebido não é nulo e é igual ao num recebido
                     if (contato != null && c.getNumero().equals(contato.getNumero())) {
                         contatoSeraRemovido = i;
                         break;
@@ -238,12 +247,14 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             }
         }
 
+        // Remove do SharedPreferences
         SharedPreferences.Editor editor = resgatarContatosAtuais.edit();
         editor.remove("contato" + contatoSeraRemovido);
         editor.commit();
 
         Toast.makeText(this, "Contato deletado com sucesso!", Toast.LENGTH_LONG).show();
 
+        // Atualiza o usuário e ListView
         user = atualizarUser();
         atualizarListaDeContatos(user);
         preencherListViewImagens(user);
@@ -362,8 +373,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
     public void onDialogPositiveClick(int codigo) {
 
         if (codigo==1){
-          String[] permissions ={Manifest.permission.CALL_PHONE};
-          requestPermissions(permissions, 2222);
+            String[] permissions ={Manifest.permission.CALL_PHONE};
+            requestPermissions(permissions, 2222);
         } else if (codigo == 2) {
             Intent itLigar = new Intent(Intent.ACTION_DIAL, uriAtual);
             startActivity(itLigar);
